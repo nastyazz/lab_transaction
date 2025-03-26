@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:13.2
+    container_name: shop_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: shop_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: order_service
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://admin:123@db:5432/shop_db
+    volumes:
+      - .:/app
+    entrypoint: ["/bin/bash", "-c"]
+
+volumes:
+  db_data:
